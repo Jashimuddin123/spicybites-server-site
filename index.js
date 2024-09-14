@@ -42,6 +42,19 @@ async function run() {
 }
 run().catch(console.dir);
 
+
+
+const addFood = client.db('addfood').collection('add');
+  // Post method
+  app.post('/addfood', async (req, res) => {
+
+    const newAdd = req.body;
+    console.log(newAdd);
+    const result = await addFood.insertOne(newAdd);
+    res.send(result);
+  });
+
+
 // ----------------------------------====......................................................
 // testing api 
 app.get('/', (req, res)=>{
