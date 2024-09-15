@@ -44,13 +44,13 @@ run().catch(console.dir);
 
 
 
-const addFood = client.db('addfood').collection('add');
+const addFoodCollection = client.db('addfood').collection('add');
   // Post method
   app.post('/addfood', async (req, res) => {
 
     const newAdd = req.body;
-    console.log(newAdd);
-    const result = await addFood.insertOne(newAdd);
+    console.log('this is server post api',newAdd);
+    const result = await addFoodCollection.insertOne(newAdd);
     res.send(result);
   });
 
@@ -58,7 +58,7 @@ const addFood = client.db('addfood').collection('add');
 // ----------------------------------====......................................................
 // testing api 
 app.get('/', (req, res)=>{
-    res.send('simple crud is running')
+    res.send('simple jashim  crud is running')
 })
 
 // testing api for server
