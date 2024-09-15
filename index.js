@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require("cors")
 require('dotenv').config();
 const app =  express();
@@ -71,6 +71,27 @@ const userCollection = client.db('user').collection('user')
       const result = await cursor.toArray()
       return res.send(result)
   })
+
+
+  	// load single data 
+	app.get('/addfood/:id', async(req,res) => {
+		const id = req.params.id;
+		const query = {_id: new ObjectId (id)}
+		const result = await addFoodCollection.findOne(query);
+		res.send(result);
+	})
+
+
+   // get method by _id
+  //  app.get('/addfood/:id', async(req, res)=>{
+  // //   // const id = req.params.id;
+  // //   // console.log('find id',id);
+  // //   // const filter = {_id: new ObjectId(id)}
+  // //   // const result = await addFoodCollection.findOne(filter);
+  // //   // res.send(result)
+  // // }) 
+    
+
 
 
   // user related  api 
