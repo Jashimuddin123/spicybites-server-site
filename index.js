@@ -45,6 +45,8 @@ run().catch(console.dir);
 
 
 const addFoodCollection = client.db('addfood').collection('add');
+// user collection
+const userCollection = client.db('user').collection('user')
   // Post method
   app.post('/addfood', async (req, res) => {
 
@@ -54,6 +56,15 @@ const addFoodCollection = client.db('addfood').collection('add');
     res.send(result);
   });
 
+
+  // user related  api 
+  app.post('/user', async(req, res)=>{
+    const user = req.body;
+    console.log('user body', user);
+    const result = await userCollection.insertOne(user);
+    res.send(result)
+    
+  })
 
 // ----------------------------------====......................................................
 // testing api 
