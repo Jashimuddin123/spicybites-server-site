@@ -56,6 +56,22 @@ const userCollection = client.db('user').collection('user')
     res.send(result);
   });
 
+  
+    //  get method  for take data from database
+    app.get('/addfood' , async (req, res)=>{
+      const queryEmail = req.query.email;
+      console.log('top food card here');
+      
+      if(queryEmail){
+        const filter = {email:queryEmail};
+        const result = await addFoodCollection.find(filter).toArray()
+        return res.send(result)
+      }
+      const cursor = addFoodCollection.find()
+      const result = await cursor.toArray()
+      return res.send(result)
+  })
+
 
   // user related  api 
   app.post('/user', async(req, res)=>{
