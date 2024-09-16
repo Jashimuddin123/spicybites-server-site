@@ -105,6 +105,26 @@ const userCollection = client.db('user').collection('user')
   });
 
 
+  // update method ,,for update data
+  app.put('/addfood/:id', async (req, res) => {
+    const id = req.params.id;
+    const updateData = req.body;
+    console.log('Update data from client:', updateData);
+
+    const filter = { _id: new ObjectId(id) };
+    const updateDocument = {
+        $set: {
+            food_name: updateData.updatedFoodName,
+            price: updateData.updatedFoodPrice,
+            food_category: updateData.updatedFoodCategory,
+            food_image: updateData.updatedFoodImage
+        }
+    };
+    
+    const result = await addFoodCollection.updateOne(filter, updateDocument, { upsert: true });
+    res.send(result);
+});
+
 
 
    // get method by _id
