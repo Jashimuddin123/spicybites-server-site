@@ -45,6 +45,7 @@ run().catch(console.dir);
 
 
 const addFoodCollection = client.db('addfood').collection('add');
+const foodPurchaseCoolection = client.db('addfood').collection('foodPurchase')
 // user collection
 const userCollection = client.db('user').collection('user')
   // Post method
@@ -80,6 +81,18 @@ const userCollection = client.db('user').collection('user')
 		const result = await addFoodCollection.findOne(query);
 		res.send(result);
 	})
+
+
+  // Post method
+  app.post('/addfood', async (req, res) => {
+
+    const newAdd = req.body;
+    console.log('this is server post api',newAdd);
+    const result = await foodPurchaseCoolection.insertOne(newAdd);
+    res.send(result);
+  });
+
+
 
 
    // get method by _id
