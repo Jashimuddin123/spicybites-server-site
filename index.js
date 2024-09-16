@@ -45,7 +45,19 @@ run().catch(console.dir);
 
 
 const addFoodCollection = client.db('addfood').collection('add');
-const foodPurchaseCoolection = client.db('addfood').collection('foodPurchase')
+const foodPurchaseCollection = client.db('purchaseItem').collection('foodPurchases');
+
+// Post method for food purchase
+app.post('/purchasefood', async (req, res) => {
+  const purchaseData = req.body;
+  console.log('Purchase data received:', purchaseData);
+  
+  const result = await foodPurchaseCollection.insertOne(purchaseData);
+  res.send(result);
+});
+
+
+
 // user collection
 const userCollection = client.db('user').collection('user')
   // Post method
