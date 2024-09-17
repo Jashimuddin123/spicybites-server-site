@@ -56,6 +56,21 @@ app.post('/purchasefood', async (req, res) => {
   res.send(result);
 });
 
+    //  get method  for take data from database
+    app.get('/purchasefood' , async (req, res)=>{
+      const queryEmail = req.query.email;
+      console.log('top food card here');
+      
+      if(queryEmail){
+        const filter = {email:queryEmail};
+        const result = await addFoodCollection.find(filter).toArray()
+        return res.send(result)
+      }
+      const cursor = foodPurchaseCollection.find()
+      const result = await cursor.toArray()
+      return res.send(result)
+  })
+
 
 
 // user collection
@@ -127,15 +142,13 @@ const userCollection = client.db('user').collection('user')
 
 
 
-   // get method by _id
-  //  app.get('/addfood/:id', async(req, res)=>{
-  // //   // const id = req.params.id;
-  // //   // console.log('find id',id);
-  // //   // const filter = {_id: new ObjectId(id)}
-  // //   // const result = await addFoodCollection.findOne(filter);
-  // //   // res.send(result)
-  // // }) 
-    
+  // delete method
+  app.delete('/purchasefood/:id', async(req, res)=>{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)}
+    const result = await foodPurchaseCollection.deleteOne(query);
+    res.send(result)
+  } )
 
 
 
