@@ -161,6 +161,27 @@ const userCollection = client.db('user').collection('user')
     
   })
 
+
+// get api for search method impliment in all foods apges
+
+  app.get('/addfood', async (req, res) => {
+    const queryFoodName = req.query.food_name;
+    let result;
+  
+    if (queryFoodName) {
+      // If the query contains a food name, filter by food_name
+      const filter = { food_name: { $regex: queryFoodName, $options: "i" } }; // case insensitive search
+      result = await addFoodCollection.find(filter).toArray();
+    } else {
+      // If no query parameter is present, return all food items
+      const cursor = addFoodCollection.find();
+      result = await cursor.toArray();
+    }
+    
+    res.send(result);
+  });
+  
+
 // ----------------------------------====......................................................
 // testing api 
 app.get('/', (req, res)=>{
