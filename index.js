@@ -2,11 +2,17 @@ const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require("cors")
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
 const app =  express();
 const port = process.env.PORT || 5000;
 
 // MIDDLEWARE 
-app.use(cors());
+app.use(cookieParser())
+app.use(cors({
+  origin: 'http://localhost:5173', // Match this to your frontend's address
+  credentials: true
+}));
 app.use(express.json())
 
 // spicybites
@@ -27,6 +33,14 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+const cookieOption = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+  maxAge: 60 * 60 * 1000,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+};
 
 async function run() {
   try {
@@ -47,6 +61,21 @@ run().catch(console.dir);
 const addFoodCollection = client.db('addfood').collection('add');
 const foodPurchaseCollection = client.db('purchaseItem').collection('foodPurchases');
 
+// jsaon web token api 
+app.post('/jwt', async(req, res)=>{
+  const user = req.body;
+   console.log('json token', user);
+  
+  const token = jwt.sign(user,process.env.ACCES_TOKEN , {expiresIn: "7h"})
+  
+  res.cookie('token', token , cookieOption).send({success : true})
+})
+
+app.post('/logout', async(req, res)=>{
+  console.log('this is logout ');
+  
+  res.clearCookie('token',{...cookieOption, maxAge:0}).send({success:true})
+})
 // Post method for food purchase
 app.post('/purchasefood', async (req, res) => {
   const purchaseData = req.body;
@@ -55,6 +84,21 @@ app.post('/purchasefood', async (req, res) => {
   const result = await foodPurchaseCollection.insertOne(purchaseData);
   res.send(result);
 });
+
+
+
+ 
+// Purchase method count
+app.put('/purchasefood/:id',async(req, res)=>{
+  const id = req.params.id;
+  console.log('params id', id);
+  const filter = { _id: new  ObjectId(id) };
+    
+  const result = await addFoodCollection.updateOne(filter, {$inc:{purchaseCount : 1}}, { upsert: true });
+    res.send(result);
+  
+})
+  
 
     //  get method  for take data from database
     app.get('/purchasefood' , async (req, res)=>{
@@ -99,7 +143,11 @@ const userCollection = client.db('user').collection('user')
       const result = await cursor.toArray()
       return res.send(result)
   })
-
+//get method for top food section
+app.get('/topFood', async(req, res)=>{
+  const result =  await addFoodCollection.find().sort({purchaseCount : -1}).toArray()
+  res.send(result)
+})
 
   	// load single data 
 	app.get('/addfood/:id', async(req,res) => {
@@ -119,7 +167,6 @@ const userCollection = client.db('user').collection('user')
     res.send(result);
   });
 
-
   // update method ,,for update data
   app.put('/addfood/:id', async (req, res) => {
     const id = req.params.id;
@@ -133,7 +180,8 @@ const userCollection = client.db('user').collection('user')
             price: updateData.updatedFoodPrice,
             food_category: updateData.updatedFoodCategory,
             food_image: updateData.updatedFoodImage
-        }
+        },  
+        
     };
     
     const result = await addFoodCollection.updateOne(filter, updateDocument, { upsert: true });
