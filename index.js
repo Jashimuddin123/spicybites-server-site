@@ -9,21 +9,34 @@ const port = process.env.PORT || 5000;
 
 // MIDDLEWARE 
 app.use(cookieParser())
-app.use(cors({
-  origin: 'http://localhost:5173', // Match this to your frontend's address
-  credentials: true
-}));
+// app.use(cors({
+//   origin: [
+// // // 'http://localhost:5173', // Match this to your frontend's address
+// // "https://spicybites-management.web.app",
+// // "https://spicybites-management.firebaseapp.com"
+
+
+//   ],
+//   credentials: true
+// }));
+app.use(cors())
 app.use(express.json())
 
-// spicybites
-// Pwz8jMmAJMRvQVtr
+
+// custom middleeware
+const verifyToken = (req, res, next)=>{
+  const token = req.cookies?.token
+  console.log('token her', token);
+  res.send([])
+  next()
+}
+
 
 // mongodb database 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.3tcc9mo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 
-// const uri = "mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.3tcc9mo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-// const uri = "mongodb+srv://spicybites:Pwz8jMmAJMRvQVtr@cluster0.3tcc9mo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -45,9 +58,9 @@ const cookieOption = {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
@@ -91,7 +104,7 @@ app.post('/purchasefood', async (req, res) => {
 // Purchase method count
 app.put('/purchasefood/:id',async(req, res)=>{
   const id = req.params.id;
-  console.log('params id', id);
+  // console.log('params id', id);
   const filter = { _id: new  ObjectId(id) };
     
   const result = await addFoodCollection.updateOne(filter, {$inc:{purchaseCount : 1}}, { upsert: true });
@@ -103,7 +116,7 @@ app.put('/purchasefood/:id',async(req, res)=>{
     //  get method  for take data from database
     app.get('/purchasefood' , async (req, res)=>{
       const queryEmail = req.query.email;
-      console.log('top food card here');
+      // console.log('top food card here');
       
       if(queryEmail){
         const filter = {email:queryEmail};
@@ -132,7 +145,7 @@ const userCollection = client.db('user').collection('user')
     //  get method  for take data from database
     app.get('/addfood' , async (req, res)=>{
       const queryEmail = req.query.email;
-      console.log('top food card here');
+      // console.log('top food card here');
       
       if(queryEmail){
         const filter = {email:queryEmail};
@@ -162,7 +175,7 @@ app.get('/topFood', async(req, res)=>{
   app.post('/addfood', async (req, res) => {
 
     const newAdd = req.body;
-    console.log('this is server post api',newAdd);
+    // console.log('this is server post api',newAdd);
     const result = await foodPurchaseCoolection.insertOne(newAdd);
     res.send(result);
   });
@@ -171,7 +184,7 @@ app.get('/topFood', async(req, res)=>{
   app.put('/addfood/:id', async (req, res) => {
     const id = req.params.id;
     const updateData = req.body;
-    console.log('Update data from client:', updateData);
+    // console.log('Update data from client:', updateData);
 
     const filter = { _id: new ObjectId(id) };
     const updateDocument = {
