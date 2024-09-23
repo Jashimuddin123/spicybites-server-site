@@ -223,7 +223,7 @@ app.get('/topFood', async(req, res)=>{
   })
 
 
-// get api for search method impliment in all foods apges
+// get api for search method impliment in all foods pages
 
   app.get('/addfood', async (req, res) => {
     const queryFoodName = req.query.food_name;
